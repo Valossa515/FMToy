@@ -29,9 +29,6 @@ public class JwtUtils {
 	@Value("${fmtoy.app.jwtExpirationMs}")
 	private int jwtExpirationMs;
 
-	@Value("${fmtoy.app.jwtCookieName}")
-	private String jwtCookie;
-
 	@Autowired
 	private KafkaProducerConfig kafkaProducerConfig;
 	

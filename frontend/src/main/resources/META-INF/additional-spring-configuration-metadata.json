@@ -1,63 +1,8 @@
 {"properties": [
   {
-    "name": "bezkoder.app.jwtCookieName",
+    "name": "default.sender",
     "type": "java.lang.String",
-    "description": "A description for 'bezkoder.app.jwtCookieName'"
-  },
-  {
-    "name": "bezkoder.app.jwtSecret",
-    "type": "java.lang.String",
-    "description": "A description for 'bezkoder.app.jwtSecret'"
-  },
-  {
-    "name": "bezkoder.app.jwtExpirationMs",
-    "type": "java.lang.String",
-    "description": "A description for 'bezkoder.app.jwtExpirationMs'"
-  },
-  {
-    "name": "bezkoder.app.jwtExpirationMs",
-    "type": "java.lang.String",
-    "description": "A description for 'bezkoder.app.jwtExpirationMs'"
-  },
-  {
-    "name": "bezkoder.app.jwtExpirationMs",
-    "type": "java.lang.String",
-    "description": "A description for 'bezkoder.app.jwtExpirationMs'"
-  },
-  {
-    "name": "bezkoder.app.jwtCookieName",
-    "type": "java.lang.String",
-    "description": "A description for 'bezkoder.app.jwtCookieName'"
-  },
-  {
-    "name": "fmtoy.app.jwtCookieName",
-    "type": "java.lang.String",
-    "description": "A description for 'fmtoy.app.jwtCookieName'"
-  },
-  {
-    "name": "fmtoy.app.jwtCookieName",
-    "type": "java.lang.String",
-    "description": "A description for 'fmtoy.app.jwtCookieName'"
-  },
-  {
-    "name": "fmtoy.app.jwtExpirationMs",
-    "type": "java.lang.String",
-    "description": "A description for 'fmtoy.app.jwtExpirationMs'"
-  },
-  {
-    "name": "fmtoy.app.jwtSecret",
-    "type": "java.lang.String",
-    "description": "A description for 'fmtoy.app.jwtSecret'"
-  },
-  {
-    "name": "fmtoy.app.jwtSecret",
-    "type": "java.lang.String",
-    "description": "A description for 'fmtoy.app.jwtSecret'"
-  },
-  {
-    "name": "topic.log_infos",
-    "type": "java.lang.String",
-    "description": "A description for 'topic.log_infos'"
+    "description": "A description for 'default.sender'"
   },
   {
     "name": "default.recipient",
@@ -65,14 +10,9 @@
     "description": "A description for 'default.recipient'"
   },
   {
-    "name": "default.sender",
+    "name": "topic.log_infos",
     "type": "java.lang.String",
-    "description": "A description for 'default.sender'"
-  },
-  {
-    "name": "fmtoy.app.jwtCookieName",
-    "type": "java.lang.String",
-    "description": "A description for 'fmtoy.app.jwtCookieName'"
+    "description": "A description for 'topic.log_infos'"
   },
   {
     "name": "fmtoy.app.jwtExpirationMs",
