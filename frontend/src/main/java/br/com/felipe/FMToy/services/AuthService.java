@@ -26,7 +26,7 @@ public class AuthService {
 	{
 		Cliente cliente = clienteRepository.findByEmail(email);
 		
-		if(cliente ==null)
+		if(cliente == null)
 		{
 			throw new ObjectNotFoundException("Email não encontrado!");
 		}

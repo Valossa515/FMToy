@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.felipe.FMToy.dtos.EmailDTO;
 import br.com.felipe.FMToy.entities.Cliente;
 import br.com.felipe.FMToy.entities.Roles;
 import br.com.felipe.FMToy.entities.enums.ERole;
@@ -30,6 +31,7 @@ import br.com.felipe.FMToy.repositories.ClienteRepository;
 import br.com.felipe.FMToy.repositories.RoleRepository;
 import br.com.felipe.FMToy.security.JwtUtils;
 import br.com.felipe.FMToy.security.UserDetailsImpl;
+import br.com.felipe.FMToy.services.AuthService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -37,45 +39,38 @@ import jakarta.validation.Valid;
 public class AuthController {
 
 	@Autowired
-	AuthenticationManager authenticationManager;
-
+	private AuthenticationManager authenticationManager;
 	@Autowired
-	ClienteRepository clienteRepository;
-
+	private ClienteRepository clienteRepository;
 	@Autowired
 	PasswordEncoder encoder;
-
 	@Autowired
-	JwtUtils jwtUtils;
-
+	private JwtUtils jwtUtils;
 	@Autowired
-	RoleRepository roleRepository;
-
+	private RoleRepository roleRepository;
 	@Autowired
 	private KafkaProducerConfig kafkaProducerConfig;
+	@Autowired
+	private AuthService authService;
 
 	@PostMapping("/signin")
-	 public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-	    Authentication authentication = authenticationManager
-	        .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-	    
-	    SecurityContextHolder.getContext().setAuthentication(authentication);
-	    String jwt = jwtUtils.generateJwtToken(authentication);
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-	    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-	    List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
-	        .collect(Collectors.toList());
-	    String message = "Usuário logado com sucesso: "
-	            + "ID: " + userDetails.getId()
-	            + ", Username: " + userDetails.getUsername()
-	            + ", Email: " + userDetails.getEmail()
-	            + ", Roles: " + roles.toString();
-	    kafkaProducerConfig.sendMessage(message);
-	    return ResponseEntity
-	        .ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
-	  }
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		String jwt = jwtUtils.generateJwtToken(authentication);
 
+		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+		List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
+				.collect(Collectors.toList());
+		String message = "Usuário logado com sucesso: " + "ID: " + userDetails.getId() + ", Username: "
+				+ userDetails.getUsername() + ", Email: " + userDetails.getEmail() + ", Roles: " + roles.toString();
+		kafkaProducerConfig.sendMessage(message);
+		return ResponseEntity.ok(
+				new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+	}
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
@@ -122,14 +117,19 @@ public class AuthController {
 		user.setRoles(roles);
 		clienteRepository.save(user);
 		kafkaProducerConfig.sendMessage("Usuário registrado com sucesso: " + signUpRequest.getUsername());
-		 return ResponseEntity.ok(new MessageResponse("Usuário registrado com sucesso!"));
+		return ResponseEntity.ok(new MessageResponse("Usuário registrado com sucesso!"));
 	}
-	
+
 	@PostMapping("/signout")
-    public ResponseEntity<String> signOut(@RequestHeader("Authorization") String tokenHeader) {
-        String token = tokenHeader.replace("Bearer ", "");
-        // Invalidar o token
-        jwtUtils.invalidateToken(token);
-        return ResponseEntity.ok("Deslogado com sucesso.");
-    }
+	public ResponseEntity<String> signOut(@RequestHeader("Authorization") String tokenHeader) {
+		String token = tokenHeader.replace("Bearer ", "");
+		// Invalidar o token
+		jwtUtils.invalidateToken(token);
+		return ResponseEntity.ok("Deslogado com sucesso.");
+	}
+	@PostMapping(value = "/forgot")
+	public ResponseEntity<Void> forgot(@Valid @RequestBody EmailDTO objDTO) {
+		authService.sendNewPassword(objDTO.email());
+		return ResponseEntity.noContent().build();
+	}
 }
