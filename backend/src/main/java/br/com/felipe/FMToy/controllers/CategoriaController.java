@@ -37,7 +37,7 @@ public class CategoriaController {
 		return ResponseEntity.ok().body(obj);
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_MODERATOR')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping
 	public ResponseEntity<Void> insert(@Valid @RequestBody CategoriaDTO objDto)
 	{
@@ -48,7 +48,7 @@ public class CategoriaController {
 		return ResponseEntity.created(uri).build();
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_MODERATOR')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<Void> update(@Valid @RequestBody CategoriaDTO objDto, @PathVariable Long id)
 	{
@@ -58,7 +58,7 @@ public class CategoriaController {
 		return ResponseEntity.noContent().build();
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_MODERATOR')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id)
 	{

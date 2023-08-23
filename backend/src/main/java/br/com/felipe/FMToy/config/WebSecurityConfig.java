@@ -2,7 +2,6 @@ package br.com.felipe.FMToy.config;
 
 import java.util.Arrays;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +22,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import br.com.felipe.FMToy.security.AuthEntryPointJwt;
 import br.com.felipe.FMToy.security.AuthTokenFilter;
-import br.com.felipe.FMToy.security.CustomAccessDeniedHandler;
 import br.com.felipe.FMToy.security.UserDetailsServiceImpl;
 
 @Configuration
@@ -65,7 +63,7 @@ public class WebSecurityConfig {
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-				.exceptionHandling(exception -> exception.accessDeniedHandler(new CustomAccessDeniedHandler()))
+				//.exceptionHandling(exception -> exception.accessDeniedHandler(new CustomAccessDeniedHandler()))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
 						  .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/**")).permitAll()

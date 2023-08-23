@@ -55,9 +55,10 @@ public class Pedido implements Serializable {
 		return soma;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public String toString() {
-		NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.of("pt", "BR"));
+		NumberFormat nf = NumberFormat.getCurrencyInstance( new Locale("pt", "BR"));
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
 		StringBuilder builder = new StringBuilder();
 		builder.append("Pedido Número: ");
@@ -77,5 +78,31 @@ public class Pedido implements Serializable {
 		builder.append(nf.format(getValorTotal()));
 		return builder.toString();
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Pedido other = (Pedido) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+
 	
 }
