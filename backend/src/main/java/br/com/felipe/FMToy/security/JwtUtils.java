@@ -47,7 +47,7 @@ public class JwtUtils {
                 .compact();
 
         // Enviar mensagem ao Kafka quando um token JWT é gerado
-        kafkaProducerConfig.sendMessage("Token JWT" + jwt + " gerado para o usuário: " + userPrincipal.getUsername());
+        kafkaProducerConfig.sendMessage("Token JWT: " + jwt + " gerado para o usuário: " + userPrincipal.getUsername());
 
         return jwt;
     }
