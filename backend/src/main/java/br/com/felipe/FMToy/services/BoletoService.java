@@ -1,4 +1,4 @@
-package br.com.felipe.FMToy.repositories;
+package br.com.felipe.FMToy.services;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -9,8 +9,9 @@ import br.com.felipe.FMToy.entities.PagamentoComBoleto;
 
 @Service
 public class BoletoService {
-
-	public void preencherPagementoComBoleto(PagamentoComBoleto pagto, Date instanteDoPedido) {
+	
+	public void preencherPagementoComBoleto(PagamentoComBoleto pagto, Date instanteDoPedido)
+	{
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(instanteDoPedido);
 		cal.add(Calendar.DAY_OF_MONTH, 7);

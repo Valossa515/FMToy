@@ -1,9 +1,11 @@
 package br.com.felipe.FMToy.controllers;
 
-import java.net.URI;
+import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import br.com.felipe.FMToy.entities.PagamentoComBoleto;
 import br.com.felipe.FMToy.entities.Pedido;
 import br.com.felipe.FMToy.services.PedidoService;
 import jakarta.validation.Valid;
@@ -31,14 +33,29 @@ public class PedidoController {
 		return ResponseEntity.ok().body(obj);
 	}
 	
-	@PostMapping
-	public ResponseEntity<Void> insert(@Valid @RequestBody Pedido obj)
-	{
-		obj = pedidoService.insert(obj);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(obj.getId()).toUri();
-		return ResponseEntity.created(uri).build();
+	@PostMapping(produces = MediaType.APPLICATION_PDF_VALUE)
+	public ResponseEntity<byte[]> insert(@Valid @RequestBody Pedido obj) throws IOException {
+	    obj = pedidoService.insert(obj);
+
+	    if (obj.getPagamento() instanceof PagamentoComBoleto) {
+	        byte[] pdfBytes = pedidoService.gerarPdfBoleto(obj);
+
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setContentType(MediaType.APPLICATION_PDF);
+	        headers.setContentDispositionFormData("attachment", "boleto.pdf");
+
+	        return ResponseEntity.ok()
+	                .headers(headers)
+	                .contentType(MediaType.APPLICATION_PDF)
+	                .body(pdfBytes);
+	    }
+
+	    // Retorna um ResponseEntity vazio se não for um pagamento com boleto
+	    return ResponseEntity.noContent().build();
 	}
+
+
+
 	
 	@PostMapping("/pages")
 	public ResponseEntity<Page<Pedido>> findPage(

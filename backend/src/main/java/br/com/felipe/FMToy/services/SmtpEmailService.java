@@ -33,4 +33,5 @@ public class SmtpEmailService extends AbstractMailService{
 		javaMailSender.send(msg);
 		LOG.info("Email enviado!!!");
 	}
+	
 }	
