@@ -14,7 +14,6 @@ import br.com.felipe.FMToy.entities.Cliente;
 import br.com.felipe.FMToy.entities.Pedido;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.util.ByteArrayDataSource;
 
 public abstract class AbstractMailService implements EmailService{
 	

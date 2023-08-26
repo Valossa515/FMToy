@@ -1,11 +1,15 @@
 package br.com.felipe.FMToy.services;
 
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.Optional;
 
+import org.krysalis.barcode4j.impl.code128.Code128Bean;
+import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +22,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 
@@ -139,7 +144,7 @@ public class PedidoService {
 	    ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
 	    
 	    Document document = new Document();
-	    
+	    double totalGeral = 0.0;
 	    try {
 	        PdfWriter.getInstance(document, pdfOutputStream);
 	        document.open();
@@ -148,11 +153,11 @@ public class PedidoService {
 	        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16);
 	        
 	        // Adicione informações do pedido
+	        
 	        Paragraph titlePedido = new Paragraph("Detalhes do Pedido", titleFont);
 	        Paragraph infoPedido = new Paragraph(
 	            "Número do Pedido: " + obj.getId() + "\n" +
-	            "Data do Pedido: " + obj.getInstante() + "\n" +
-	            "Valor Total: " + obj.getValorTotal()
+	            "Data do Pedido: " + obj.getInstante()
 	            // Outras informações do pedido
 	        );
 	        
@@ -165,20 +170,59 @@ public class PedidoService {
 	        );
 	        
 	        // Crie um código de barras para o boleto
-	        String codigoBarras = "1234567890123456789012345678901234567890";
-	        Paragraph codigoBarrasParaPDF = new Paragraph("Código de Barras: " + codigoBarras);
-	        
+	        Code128Bean code128Bean = new Code128Bean();
+	        final int dpi = 150;
+	        String barcodeContent = "ORDER-" + obj.getId() + obj.getInstante().getTime();
+	        BitmapCanvasProvider canvas = new BitmapCanvasProvider(
+	                pdfOutputStream, "image/png", dpi, BufferedImage.TYPE_BYTE_BINARY, false, 0);
+	        code128Bean.generateBarcode(canvas, barcodeContent);
+	        canvas.finish();
 	        // Adicione os parágrafos ao documento
 	        document.add(titlePedido);
 	        document.add(infoPedido);
 	        document.add(titleEmpresa);
 	        document.add(infoEmpresa);
-	        document.add(codigoBarrasParaPDF);
+	        
+	        
+	        Paragraph titleItens = new Paragraph("Itens do Pedido", titleFont);
+	        document.add(titleItens);
+	        
+	        for (ItemPedido ip : obj.getItens()) {
+	            ip.setDesconto(0.0);
+	            ip.setProduto(produtoService.find(ip.getProduto().getId()));
+	            ip.setPreco(ip.getProduto().getPreco());
+	            ip.setPedido(obj);
+	            
+	            double subtotal = ip.getSubTotal();
+	            // Adicione informações do item ao documento, como descrição, quantidade, preço, subtotal, etc.
+	            Paragraph infoItem = new Paragraph(
+	                "Descrição: " + ip.getProduto().getNome() + "\n" +
+	                "Quantidade: " + ip.getQuantidade() + "\n" +
+	                "Preço Unitário: " + ip.getPreco() + "\n" +
+	                "Subtotal: " + subtotal
+	                // Calcule e adicione o subtotal aqui
+	            );
+	            
+	            document.add(infoItem);
+	            totalGeral += subtotal;
+	            
+	        }
+	     // Adicione o total geral ao documento
+	        Paragraph totalGeralParaPDF = new Paragraph("Total Geral: " + totalGeral);
+	        document.add(totalGeralParaPDF);
+	        Image barcodeImage = Image.getInstance(pdfOutputStream.toByteArray());
+	        document.add(barcodeImage);
 	        
 	        document.close();
 	    } catch (DocumentException e) {
 	        // Lidar com exceções (pode lançar exceção personalizada, log, etc.)
-	    }
+	    } catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    
 	    return pdfOutputStream.toByteArray();
 	}

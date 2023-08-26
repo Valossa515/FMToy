@@ -30,7 +30,8 @@ public class ClienteController {
 		Cliente obj = clienteService.find(id);
 		return ResponseEntity.ok().body(obj);
 	}
-
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@GetMapping("/email")
 	public ResponseEntity<Cliente> find(@RequestParam(value = "value") String email) {
 		Cliente obj = clienteService.findByEmail(email);
@@ -44,7 +45,8 @@ public class ClienteController {
 		Cliente obj = clienteService.updateProfileAndAddress(id, objDto);
 		return ResponseEntity.ok(obj);
 	}
-
+	
+	@PreAuthorize("hasAnyRole('ROLE_USER')")
 	@PutMapping("/{id}/credenciais")
 	public ResponseEntity<Cliente> updateCredentials(@PathVariable Long id, @Valid @RequestBody ClienteDTO clienteDTO) {
 		Cliente updatedCliente = clienteService.updateCredentials(id, clienteDTO);

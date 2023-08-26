@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +34,7 @@ public class PedidoController {
 		return ResponseEntity.ok().body(obj);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_USER')")
 	@PostMapping(produces = MediaType.APPLICATION_PDF_VALUE)
 	public ResponseEntity<byte[]> insert(@Valid @RequestBody Pedido obj) throws IOException {
 	    obj = pedidoService.insert(obj);
@@ -54,9 +56,6 @@ public class PedidoController {
 	    return ResponseEntity.noContent().build();
 	}
 
-
-
-	
 	@PostMapping("/pages")
 	public ResponseEntity<Page<Pedido>> findPage(
 			@RequestParam(value="page", defaultValue="0") Integer page,
