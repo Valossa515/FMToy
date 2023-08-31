@@ -70,6 +70,7 @@ public class ProdutoService {
         produto.setId(produtoDTO.id());
         produto.setNome(produtoDTO.nome());
         produto.setPreco(produtoDTO.preco());
+        produto.getQuantidade();
         // Crie um set vazio para as categorias, elas serão associadas após a inserção
         produto.setCategorias(new ArrayList<>());
         return produto;

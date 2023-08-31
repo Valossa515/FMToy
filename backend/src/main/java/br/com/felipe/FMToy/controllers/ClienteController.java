@@ -16,10 +16,13 @@ import br.com.felipe.FMToy.dtos.ClienteDTO;
 import br.com.felipe.FMToy.dtos.ClienteNewDTO;
 import br.com.felipe.FMToy.entities.Cliente;
 import br.com.felipe.FMToy.services.ClienteService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/clientes")
+@Tag(name = "Enpoint Cliente",
+description = "Tutorial de como funciona o Endpoint de cliente")
 public class ClienteController {
 
 	@Autowired

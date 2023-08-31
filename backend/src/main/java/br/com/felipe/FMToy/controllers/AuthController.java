@@ -32,10 +32,13 @@ import br.com.felipe.FMToy.repositories.RoleRepository;
 import br.com.felipe.FMToy.security.JwtUtils;
 import br.com.felipe.FMToy.security.UserDetailsImpl;
 import br.com.felipe.FMToy.services.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Enpoint Autenticação",
+description = "Tutorial de como funciona o Endpoint de autenticação")
 public class AuthController {
 
 	@Autowired

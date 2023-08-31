@@ -22,10 +22,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import br.com.felipe.FMToy.dtos.CategoriaDTO;
 import br.com.felipe.FMToy.entities.Categoria;
 import br.com.felipe.FMToy.services.CategoriaService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/categorias")
+@Tag(name = "Enpoint Categoria",
+description = "Tutorial de como funciona o Endpoint de categoria")
 public class CategoriaController {
 	
 	@Autowired

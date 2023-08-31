@@ -69,14 +69,15 @@ public class WebSecurityConfig {
 						  .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/**")).permitAll()
 			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/test/**")).permitAll()
 			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
+			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/swagger-ui/**")).permitAll()
+			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/v3/api-docs/**")).permitAll()
+			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/**")).permitAll()
 						  .anyRequest().authenticated());
 
 		// fix H2 database console: Refused to display ' in a frame because it set
 		// 'X-Frame-Options' to 'deny'
 		http.headers(headers -> headers.frameOptions(frameOption -> frameOption.sameOrigin()));
-
 		http.authenticationProvider(authenticationProvider());
-
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
@@ -89,6 +90,8 @@ public class WebSecurityConfig {
 		configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
+		source.registerCorsConfiguration("/swagger-ui/**", configuration);
+		source.registerCorsConfiguration("/v3/api-docs/**", configuration);
 		return source;
 	}
 

@@ -1,5 +1,7 @@
 package br.com.felipe.FMToy.repositories;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +14,5 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long>{
 	
 	@Transactional(readOnly=true)
 	Page<Pedido> findByCliente(Cliente cliente, Pageable pageRequest);
+	List<Pedido> findByPagamentoEstado(Integer id);
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import br.com.felipe.FMToy.services.exceptions.AuthorizationException;
 import br.com.felipe.FMToy.services.exceptions.DataIntegrityException;
+import br.com.felipe.FMToy.services.exceptions.InsufficientStockException;
 import br.com.felipe.FMToy.services.exceptions.ObjectNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -47,6 +48,14 @@ public class ResourceExceptionHandler {
 		StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.FORBIDDEN.value(), "Acesso negado!!!",
 				e.getMessage(), request.getRequestURI());
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(err);
+	}
+	
+	@ExceptionHandler(InsufficientStockException.class)
+	public ResponseEntity<StandardError> insufficientStock(InsufficientStockException e, HttpServletRequest request) {
+
+		StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(),
+				"Estoque insuficiente!!!", e.getMessage(), request.getRequestURI());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
 	}
 	
 

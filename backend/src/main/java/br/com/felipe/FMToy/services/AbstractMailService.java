@@ -15,21 +15,21 @@ import br.com.felipe.FMToy.entities.Pedido;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
-public abstract class AbstractMailService implements EmailService{
-	
+public abstract class AbstractMailService implements EmailService {
+
 	@Value("${default.sender}")
 	private String sender;
 	@Autowired
 	private JavaMailSender javaMailSender;
 	@Autowired
 	private TemplateEngine templateEngine;
-	
+
 	@Override
 	public void sendOrderConfirmationEmail(Pedido obj) {
 		SimpleMailMessage sm = prepareSimpleMailMessageFromPedido(obj);
 		sendEmail(sm);
 	}
-	
+
 	protected SimpleMailMessage prepareSimpleMailMessageFromPedido(Pedido obj) {
 		SimpleMailMessage sm = new SimpleMailMessage();
 		sm.setTo(obj.getCliente().getEmail());
@@ -39,24 +39,39 @@ public abstract class AbstractMailService implements EmailService{
 		sm.setText(obj.toString());
 		return sm;
 	}
-	
+
 	protected String htmlFromTemplatePedido(Pedido obj) {
 		Context context = new Context();
 		context.setVariable("pedido", obj);
 		return templateEngine.process("email/confirmacaoPedido", context);
 	}
-	
+
+	protected String htmlFromTemplatePedidoAprovado(Pedido obj) {
+		Context context = new Context();
+		context.setVariable("pedido", obj);
+		return templateEngine.process("email/confirmacaoPagamento", context);
+	}
+
 	@Override
 	public void sendOrderConfirmationHtmlEmail(Pedido obj) {
 		try {
 			MimeMessage mm = prepareMimeMessageFromPedido(obj);
 			sendHtmlEmail(mm);
-		}
-		catch (MessagingException e) {
+		} catch (MessagingException e) {
 			sendOrderConfirmationEmail(obj);
 		}
 	}
-	
+
+	@Override
+	public void sendPaymentConfirmationEmail(Pedido pedido) {
+		try {
+			MimeMessage mm = prepareMimeMessageFromPedidoAprovado(pedido);
+			sendHtmlEmail(mm);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+	}
+
 	protected MimeMessage prepareMimeMessageFromPedido(Pedido obj) throws MessagingException {
 		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 		MimeMessageHelper mmh = new MimeMessageHelper(mimeMessage, true);
@@ -67,14 +82,24 @@ public abstract class AbstractMailService implements EmailService{
 		mmh.setText(htmlFromTemplatePedido(obj), true);
 		return mimeMessage;
 	}
-	
+
+	protected MimeMessage prepareMimeMessageFromPedidoAprovado(Pedido obj) throws MessagingException {
+		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+		MimeMessageHelper mmh = new MimeMessageHelper(mimeMessage, true);
+		mmh.setTo(obj.getCliente().getEmail());
+		mmh.setFrom(sender);
+		mmh.setSubject("Pagamento do seu pedido: " + obj.getId() + " aprovado");
+		mmh.setSentDate(new Date(System.currentTimeMillis()));
+		mmh.setText(htmlFromTemplatePedidoAprovado(obj), true);
+		return mimeMessage;
+	}
+
 	@Override
-	public void sendNewPasswordEmail(Cliente cliente, String newPass)
-	{
+	public void sendNewPasswordEmail(Cliente cliente, String newPass) {
 		SimpleMailMessage sm = prepareNewPasswordEmail(cliente, newPass);
 		sendEmail(sm);
 	}
-	
+
 	protected SimpleMailMessage prepareNewPasswordEmail(Cliente cliente, String newPass) {
 		SimpleMailMessage sm = new SimpleMailMessage();
 		sm.setTo(cliente.getEmail());
@@ -84,6 +109,5 @@ public abstract class AbstractMailService implements EmailService{
 		sm.setText("Nova senha: " + newPass);
 		return sm;
 	}
-	
-	
+
 }

@@ -21,14 +21,30 @@ import br.com.felipe.FMToy.controllers.utils.URL;
 import br.com.felipe.FMToy.dtos.ProdutoDTO;
 import br.com.felipe.FMToy.entities.Produto;
 import br.com.felipe.FMToy.services.ProdutoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping(value = "/produtos")
+@Tag(name = "Enpoint Produto",
+description = "Tutorial de como funciona o Endpoint de produtos")
 public class ProdutoController {
 
 	@Autowired
 	private ProdutoService produtoService;
-
+	
+	@Operation(
+		      summary = "Recupera um Produto por Id",
+		      description = "Obtem um objeto de Produto pelo seu id. A repsota é um objeto Produto com id, nome e preço.",
+		      tags = { "produtos", "get" })
+		  @ApiResponses({
+		      @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = Produto.class), mediaType = "application/json") }),
+		      @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+		      @ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
 	@GetMapping("/{id}")
 	public ResponseEntity<Produto> find(@PathVariable Long id) {
 		Produto obj = produtoService.find(id);

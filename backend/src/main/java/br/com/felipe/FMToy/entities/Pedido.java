@@ -42,7 +42,7 @@ public class Pedido implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "endereco_id")
 	private Endereco endereco;
-	@OneToMany(mappedBy = "id.pedido")
+	@OneToMany(mappedBy = "id.pedido", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<ItemPedido> itens = new HashSet<>();
 	
 	public double getValorTotal()
@@ -103,6 +103,4 @@ public class Pedido implements Serializable {
 			return false;
 		return true;
 	}
-
-	
 }

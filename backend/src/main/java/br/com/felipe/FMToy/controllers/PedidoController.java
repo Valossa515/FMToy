@@ -1,6 +1,7 @@
 package br.com.felipe.FMToy.controllers;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,10 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.felipe.FMToy.entities.PagamentoComBoleto;
 import br.com.felipe.FMToy.entities.Pedido;
 import br.com.felipe.FMToy.services.PedidoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/pedidos")
+@Tag(name = "Enpoint Pedido",
+description = "Tutorial de como funciona o Endpoint de pedido")
 public class PedidoController {
 
 	@Autowired
@@ -65,4 +70,12 @@ public class PedidoController {
 		Page<Pedido> list = pedidoService.findPage(page, linesPerPage, orderBy, direction);
 		return ResponseEntity.ok().body(list);
 	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_USER') or hasAnyRole('ROLE_ADMIN')")
+	@DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+		Date dataAtual = new Date();
+        pedidoService.cancelarPedido(id, dataAtual);
+        return ResponseEntity.noContent().build();
+    }
 }
