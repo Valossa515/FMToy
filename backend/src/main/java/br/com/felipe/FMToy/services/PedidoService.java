@@ -248,7 +248,7 @@ public class PedidoService {
 		Date dataCompra = pedido.getInstante();
 		long diferencaMilissegundos = dataAtual.getTime() - dataCompra.getTime();
 		long diferencaDias = diferencaMilissegundos / (24 * 60 * 60 * 1000);
-		if(diferencaDias > 7) {
+		if (diferencaDias > 7) {
 			// Primeiro, atualize as quantidades em estoque dos produtos associados
 			for (ItemPedido ip : pedido.getItens()) {
 				Produto produto = ip.getProduto();
@@ -265,9 +265,7 @@ public class PedidoService {
 			} catch (DataIntegrityViolationException e) {
 				throw new DataIntegrityException("Não é possível excluir!");
 			}
-		}
-		else
-		{
+		} else {
 			throw new IllegalStateException("Não é possível cancelar o pedido depois de 7 dias da data da compra.");
 		}
 	}
@@ -284,13 +282,11 @@ public class PedidoService {
 					emailService.sendPaymentConfirmationEmail(p);
 					ordersWithSentEmails.add(p.getId());
 				}
-			}
-			else
-			{
+			} else {
 				ordersWithSentEmails.remove(p.getId());
 			}
 		}
-		kafkaProducerConfig.sendMessage("Pagamento aprovado");
+		kafkaProducerConfig.sendMessage("Pagamento aprovado!");
 	}
 
 	public List<Pedido> findPedidosPendentesDePagamento() {
