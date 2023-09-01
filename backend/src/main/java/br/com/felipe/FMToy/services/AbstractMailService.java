@@ -51,6 +51,12 @@ public abstract class AbstractMailService implements EmailService {
 		context.setVariable("pedido", obj);
 		return templateEngine.process("email/confirmacaoPagamento", context);
 	}
+	
+	protected String htmlFromTemplatePedidoCancelado(Pedido obj) {
+		Context context = new Context();
+		context.setVariable("pedido", obj);
+		return templateEngine.process("email/confirmacaoPedidoCancelado", context);
+	}
 
 	@Override
 	public void sendOrderConfirmationHtmlEmail(Pedido obj) {
@@ -66,6 +72,15 @@ public abstract class AbstractMailService implements EmailService {
 	public void sendPaymentConfirmationEmail(Pedido pedido) {
 		try {
 			MimeMessage mm = prepareMimeMessageFromPedidoAprovado(pedido);
+			sendHtmlEmail(mm);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+	}
+	@Override
+	public void sendCancelConfirmationEmail(Pedido pedido) {
+		try {
+			MimeMessage mm = prepareMimeMessageFromPedidoCancelado(pedido);
 			sendHtmlEmail(mm);
 		} catch (MessagingException e) {
 			e.printStackTrace();
@@ -91,6 +106,17 @@ public abstract class AbstractMailService implements EmailService {
 		mmh.setSubject("Pagamento do seu pedido: " + obj.getId() + " aprovado");
 		mmh.setSentDate(new Date(System.currentTimeMillis()));
 		mmh.setText(htmlFromTemplatePedidoAprovado(obj), true);
+		return mimeMessage;
+	}
+	
+	protected MimeMessage prepareMimeMessageFromPedidoCancelado(Pedido obj) throws MessagingException {
+		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+		MimeMessageHelper mmh = new MimeMessageHelper(mimeMessage, true);
+		mmh.setTo(obj.getCliente().getEmail());
+		mmh.setFrom(sender);
+		mmh.setSubject("Pedido Nº: " + obj.getId() + " cancelado");
+		mmh.setSentDate(new Date(System.currentTimeMillis()));
+		mmh.setText(htmlFromTemplatePedidoCancelado(obj), true);
 		return mimeMessage;
 	}
 

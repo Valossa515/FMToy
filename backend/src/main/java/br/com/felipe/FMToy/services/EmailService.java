@@ -15,4 +15,5 @@ public interface EmailService {
 	void sendHtmlEmail(MimeMessage msg);
 	void sendNewPasswordEmail(Cliente cliente, String newPass);
 	void sendPaymentConfirmationEmail(Pedido obj);
+	void sendCancelConfirmationEmail(Pedido obj);
 }

@@ -248,7 +248,7 @@ public class PedidoService {
 		Date dataCompra = pedido.getInstante();
 		long diferencaMilissegundos = dataAtual.getTime() - dataCompra.getTime();
 		long diferencaDias = diferencaMilissegundos / (24 * 60 * 60 * 1000);
-		if (diferencaDias > 7) {
+		if (diferencaDias < 7) {
 			// Primeiro, atualize as quantidades em estoque dos produtos associados
 			for (ItemPedido ip : pedido.getItens()) {
 				Produto produto = ip.getProduto();
@@ -258,10 +258,13 @@ public class PedidoService {
 			}
 			// Em seguida, remova os itens do pedido da tabela "item_pedido"
 			pedido.getItens().clear();
+			pedido.getPagamento().setEstado(EstadoPagamento.CANCELADO);
 			pedidoRepository.save(pedido); // Salve o pedido modificado
+			
 			// Finalmente, exclua o pedido
 			try {
 				pedidoRepository.deleteById(id);
+				emailService.sendCancelConfirmationEmail(pedido);
 			} catch (DataIntegrityViolationException e) {
 				throw new DataIntegrityException("Não é possível excluir!");
 			}
