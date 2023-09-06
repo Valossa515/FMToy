@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class URL {
-	
+
 	public static String decodeParam(String s) {
 		try {
 			return URLDecoder.decode(s, "UTF-8");
@@ -18,11 +18,19 @@ public class URL {
 	public static List<Long> decodeLongList(String s) {
 		String[] vet = s.split(",");
 		List<Long> list = new ArrayList<>();
+
 		for (int i = 0; i < vet.length; i++) {
-			list.add(Long.parseLong(vet[i]));
+			String value = vet[i].trim();
+			if (!value.isEmpty()) {
+				try {
+					list.add(Long.parseLong(value));
+				} catch (NumberFormatException e) {
+					// Trate a exceção ou simplesmente ignore valores não numéricos
+					// Se desejar, você pode registrar um log de erro aqui
+				}
+			}
 		}
 		return list;
 	}
-	
-	
+
 }

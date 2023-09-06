@@ -1,8 +1,7 @@
 package br.com.felipe.FMToy.config;
 
-import java.util.Arrays;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,9 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import br.com.felipe.FMToy.security.AuthEntryPointJwt;
 import br.com.felipe.FMToy.security.AuthTokenFilter;
@@ -26,8 +24,11 @@ import br.com.felipe.FMToy.security.UserDetailsServiceImpl;
 
 @Configuration
 @EnableMethodSecurity
-public class WebSecurityConfig {
-
+public class WebSecurityConfig {	
+	
+	@Value("${cors.origins}")
+	private String corsOrigins;
+	
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;
 
@@ -66,12 +67,14 @@ public class WebSecurityConfig {
 				//.exceptionHandling(exception -> exception.accessDeniedHandler(new CustomAccessDeniedHandler()))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
+						  
 						  .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/**")).permitAll()
 			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/test/**")).permitAll()
 			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
 			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/swagger-ui/**")).permitAll()
 			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/v3/api-docs/**")).permitAll()
-			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/**")).permitAll()
+			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/categorias/**")).permitAll()
+			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/produtos/**")).permitAll()
 						  .anyRequest().authenticated());
 
 		// fix H2 database console: Refused to display ' in a frame because it set
@@ -83,16 +86,15 @@ public class WebSecurityConfig {
 		return http.build();
 	}
 	
+	
 	@Bean
-	CorsConfigurationSource corsConfigurationSource()
-	{
-		CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
-		configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
-		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		source.registerCorsConfiguration("/swagger-ui/**", configuration);
-		source.registerCorsConfiguration("/v3/api-docs/**", configuration);
-		return source;
+	WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**").allowedMethods("*").allowedOrigins(corsOrigins);
+			}
+		};
 	}
 
 }

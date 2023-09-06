@@ -38,5 +38,10 @@
     "name": "fmtoy.openapi.prod-url",
     "type": "java.lang.String",
     "description": "A description for 'fmtoy.openapi.prod-url'"
+  },
+  {
+    "name": "cors.origins",
+    "type": "java.lang.String",
+    "description": "A description for 'cors.origins'"
   }
 ]}
