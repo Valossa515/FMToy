@@ -75,6 +75,8 @@ public class WebSecurityConfig {
 			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/v3/api-docs/**")).permitAll()
 			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/categorias/**")).permitAll()
 			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/produtos/**")).permitAll()
+			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/clientes/**")).permitAll()
+			        	  .requestMatchers(AntPathRequestMatcher.antMatcher("/estados/**")).permitAll()
 						  .anyRequest().authenticated());
 
 		// fix H2 database console: Refused to display ' in a frame because it set

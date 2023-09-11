@@ -40,11 +40,11 @@ public class ClienteService {
 	EstadoRepository estadoRepository;
 
 	public Cliente find(Long id) {
-		UserDetailsImpl user = UserService.authenticated();
+		//UserDetailsImpl user = UserService.authenticated();
 
-		if (user == null || !user.hasRole(ERole.ROLE_USER) && !id.equals(user.getId())) {
-			throw new AuthorizationException("Acesso negado");
-		}
+		//if (user == null || !user.hasRole(ERole.ROLE_USER) && !id.equals(user.getId())) {
+			//throw new AuthorizationException("Acesso negado");
+		//}
 		Optional<Cliente> obj = clienteRepository.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName()));
